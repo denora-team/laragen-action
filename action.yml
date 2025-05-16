@@ -1,0 +1,22 @@
+name: 'Laragen Docs Uploader'
+description: 'Generates Laravel API docs and uploads them to Laragen.dev'
+author: 'Moslem Deris <moslem.deris@gmail.com>'
+branding:
+  icon: 'book'
+  color: 'blue'
+
+inputs:
+  api_key:
+    description: 'Your Laragen.dev API key'
+    required: true
+  project_slug:
+    description: 'Your Laragen.dev project slug (e.g. org/repo)'
+    required: true
+  branch:
+    description: 'Branch to document (defaults to GITHUB_REF name)'
+    required: false
+    default: ''
+
+runs:
+  using: 'node16'
+  main: 'src/index.js'
