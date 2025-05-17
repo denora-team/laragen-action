@@ -15,7 +15,7 @@ jobs:
       - name: Checkout tag
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}tag
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
