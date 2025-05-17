@@ -34,17 +34,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          TAG=${{ github.ref_name }}
-
-          # Remove any old dist, ignore if not present
           git rm -r --ignore-unmatch dist
-
-          # Add new dist, ignore if build didn't create it
-          git add dist || true
-
-          # Commit always (empty if nothing changed)
-          git commit --allow-empty -m "📦 Publish dist for ${TAG} [skip ci]"
-
-          # Push back to the same tag
-          git push origin ${TAG}
+          git add dist
+          if git diff --cached --quiet; then
+            echo "✅ No changes in dist/, skipping commit."
+          else
+            TAG=${{ github.ref_name }}
+            git commit -m "📦 Publish dist for ${TAG} [skip ci]"
+            git push origin ${TAG}
+          fi
