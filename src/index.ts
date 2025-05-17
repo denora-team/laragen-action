@@ -1,10 +1,12 @@
-const core = require('@actions/core');
+// src/index.ts
+import * as core from '@actions/core';
+import * as github from '@actions/github';
 
-async function run() {
+async function run(): Promise<void> {
     try {
         // Read inputs (for testing)
-        const apiKey = core.getInput('api_key');
-        const projectSlug = core.getInput('project_slug');
+        const apiKey: string = core.getInput('api_key');
+        const projectSlug: string = core.getInput('project_slug');
 
         // Log inputs to the workflow
         core.info(`🛠️  Testing Laragen Action - API Key: ${apiKey}`);
@@ -12,7 +14,7 @@ async function run() {
 
         // Simple output for verification
         core.setOutput('status', 'Action is working!');
-    } catch (error) {
+    } catch (error: any) {
         core.setFailed(error.message);
     }
 }
