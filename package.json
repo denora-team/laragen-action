@@ -1,11 +1,12 @@
 {
   "scripts": {
-    "build": "tsc",
+    "build": "ncc build src/index.ts -o dist",
     "prepublishOnly": "npm run build"
   },
   "main": "dist/index.js",
   "devDependencies": {
     "@types/node": "^22.15.18",
+    "@vercel/ncc": "^0.38.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
