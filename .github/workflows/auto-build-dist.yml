@@ -1,5 +1,4 @@
-name: Build Dist and Push to Main
-
+# .github/workflows/auto-build-dist.yml
 on:
   push:
     tags:
@@ -9,36 +8,38 @@ permissions:
   contents: write
 
 jobs:
-  build-and-push:
+  build-and-commit:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main branch
+      - name: Checkout tag
         uses: actions/checkout@v3
         with:
-          ref: main
+          ref: ${{ github.ref_name }}   # checks out the new tag
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Install & Build
-        run: |
-          npm ci
-          npm run build   # emits ./dist
+      - name: Install deps
+        run: npm ci
 
-      - name: Commit dist/ to main
+      - name: Build dist
+        run: npm run build
+
+      - name: Commit built dist
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm -r --ignore-unmatch dist
           git add dist
           if git diff --cached --quiet; then
             echo "✅ No changes in dist/, skipping commit."
           else
-            TAG_NAME="${GITHUB_REF#refs/tags/}"
-            git commit -m "📦 Build dist for $TAG_NAME [skip ci]"
-            git push origin main
+            TAG=${{ github.ref_name }}
+            git commit -m "📦 Publish dist for ${TAG} [skip ci]"
+            git push origin ${TAG}
           fi
