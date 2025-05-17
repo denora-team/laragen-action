@@ -15,33 +15,34 @@ jobs:
       - name: Checkout tag
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.ref_name }}tag
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      - name: Install deps
+      - name: Install dependencies
         run: npm ci
 
       - name: Build dist
         run: npm run build
 
-      - name: Commit built dist
+      - name: Commit dist and update tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Remove any old dist and add the new one
+          # Clean out old dist (if any) and stage new
           git rm -r --ignore-unmatch dist
           git add dist
 
-          # Force a commit no matter what, even if nothing changed
           TAG=${{ github.ref_name }}
+
+          # Always commit, even if nothing changed
           git commit --allow-empty -m "📦 Publish dist for ${TAG} [skip ci]"
 
-          # Push back to the same tag
-          git push origin ${TAG}
+          # Force-update the remote tag to point at this new commit
+          git push --force origin HEAD:refs/tags/${TAG}
