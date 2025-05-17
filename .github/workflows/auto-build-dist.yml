@@ -15,7 +15,7 @@ jobs:
       - name: Checkout tag
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.ref_name }}   # checks out the new tag
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
@@ -34,12 +34,14 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Remove any old dist and add the new one
           git rm -r --ignore-unmatch dist
           git add dist
-          if git diff --cached --quiet; then
-            echo "✅ No changes in dist/, skipping commit."
-          else
-            TAG=${{ github.ref_name }}
-            git commit -m "📦 Publish dist for ${TAG} [skip ci]"
-            git push origin ${TAG}
-          fi
+
+          # Force a commit no matter what, even if nothing changed
+          TAG=${{ github.ref_name }}
+          git commit --allow-empty -m "📦 Publish dist for ${TAG} [skip ci]"
+
+          # Push back to the same tag
+          git push origin ${TAG}
